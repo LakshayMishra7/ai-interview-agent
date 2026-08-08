@@ -140,29 +140,62 @@ function App() {
     }
   };
 
-  const submitAnswer = () => {
-    if (!answer.trim()) {
-      alert("Please enter your answer.");
-      return;
-    }
+  const submitAnswer = async () => {
+  if (!answer.trim()) {
+    alert("Please enter your answer.");
+    return;
+  }
 
-    const newAnswer = {
-      question: question,
-      answer: answer,
-    };
-    console.log("New Answer:", newAnswer);
-
-    setAnswers((previous) => [...previous, newAnswer]);
-
-    setAnswer("");
-
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion((previous) => previous + 1);
-    } else {
-      setPage("result");
-    }
+  const newAnswer = {
+    question: question,
+    answer: answer,
   };
 
+  const updatedAnswers = [...answers, newAnswer];
+
+  setAnswers(updatedAnswers);
+  setAnswer("");
+
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/interview/question",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          name: candidate.name,
+          role: candidate.role,
+          experience: candidate.experience,
+          skills: candidate.skills,
+          previousAnswers: updatedAnswers,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Failed to generate next question"
+      );
+    }
+
+    console.log("Next AI question:", data.question);
+
+    setQuestion(data.question);
+
+    setCurrentQuestion((previous) => previous + 1);
+
+  } catch (error) {
+    console.error("Failed to get next question:", error);
+
+    alert("Unable to generate the next question. Please try again.");
+  }
+};
   return (
     <div className="app">
 
