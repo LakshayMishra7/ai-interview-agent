@@ -1,28 +1,28 @@
 import { useState } from "react";
 import "./App.css";
 
-const questions = [
-  {
-    question:
-      "Can you explain the difference between let, const, and var in JavaScript?",
-  },
-  {
-    question:
-      "What is the difference between == and === in JavaScript?",
-  },
-  {
-    question:
-      "What is the Virtual DOM in React and why is it useful?",
-  },
-  {
-    question:
-      "What is the difference between props and state in React?",
-  },
-  {
-    question:
-      "How would you optimize the performance of a React application?",
-  },
-];
+// const questions = [
+//   {
+//     question:
+//       "Can you explain the difference between let, const, and var in JavaScript?",
+//   },
+//   {
+//     question:
+//       "What is the difference between == and === in JavaScript?",
+//   },
+//   {
+//     question:
+//       "What is the Virtual DOM in React and why is it useful?",
+//   },
+//   {
+//     question:
+//       "What is the difference between props and state in React?",
+//   },
+//   {
+//     question:
+//       "How would you optimize the performance of a React application?",
+//   },
+// ];
 
 function App() {
   const [page, setPage] = useState("home");
@@ -41,6 +41,8 @@ function App() {
 
   const [answers, setAnswers] = useState([]);
   const [question, setQuestion] = useState("");
+
+  const MAX_QUESTIONS = 10;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -141,61 +143,64 @@ function App() {
   };
 
   const submitAnswer = async () => {
-  if (!answer.trim()) {
-    alert("Please enter your answer.");
-    return;
-  }
-
-  const newAnswer = {
-    question: question,
-    answer: answer,
-  };
-
-  const updatedAnswers = [...answers, newAnswer];
-
-  setAnswers(updatedAnswers);
-  setAnswer("");
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/interview/question",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          name: candidate.name,
-          role: candidate.role,
-          experience: candidate.experience,
-          skills: candidate.skills,
-          previousAnswers: updatedAnswers,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Failed to generate next question"
-      );
+    if (!answer.trim()) {
+      alert("Please enter your answer.");
+      return;
     }
 
-    console.log("Next AI question:", data.question);
+    const newAnswer = {
+      question: question,
+      answer: answer,
+    };
 
-    setQuestion(data.question);
+    const updatedAnswers = [...answers, newAnswer];
 
-    setCurrentQuestion((previous) => previous + 1);
+    setAnswers(updatedAnswers);
+    setAnswer("");
 
-  } catch (error) {
-    console.error("Failed to get next question:", error);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/interview/question",
+        {
+          method: "POST",
 
-    alert("Unable to generate the next question. Please try again.");
-  }
-};
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            name: candidate.name,
+            role: candidate.role,
+            experience: candidate.experience,
+            skills: candidate.skills,
+            previousAnswers: updatedAnswers,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Failed to generate next question"
+        );
+      }
+
+      console.log("Next AI question:", data.question);
+
+      if (currentQuestion + 1 >= MAX_QUESTIONS) {
+        setPage("result");
+      } else {
+        setQuestion(data.question);
+        setCurrentQuestion((previous) => previous + 1);
+      }
+
+    } catch (error) {
+      console.error("Failed to get next question:", error);
+
+      alert("Unable to generate the next question. Please try again.");
+    }
+  };
   return (
     <div className="app">
 
@@ -472,7 +477,7 @@ function App() {
 
             <div className="question-count">
 
-              Question {currentQuestion + 1} / {questions.length}
+              Question {currentQuestion + 1} / {MAX_QUESTIONS}
 
             </div>
 
@@ -515,7 +520,7 @@ function App() {
               onClick={submitAnswer}
             >
 
-              {currentQuestion === questions.length - 1
+              {currentQuestion === MAX_QUESTIONS - 1
                 ? "Finish Interview →"
                 : "Submit Answer →"}
 
@@ -557,7 +562,7 @@ function App() {
                 </span>
 
                 <strong>
-                  {questions.length}
+                  {MAX_QUESTIONS}
                 </strong>
               </div>
 
