@@ -79,66 +79,66 @@ function App() {
   //   }
   // };
 
- const startInterview = async (e) => {
-  e.preventDefault();
+  const startInterview = async (e) => {
+    e.preventDefault();
 
-  if (!candidate.name.trim()) {
-    alert("Please enter your name.");
-    return;
-  }
-
-  if (!candidate.role.trim()) {
-    alert("Please enter the job role.");
-    return;
-  }
-
-  if (!candidate.skills.trim()) {
-    alert("Please enter your skills.");
-    return;
-  }
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/interview/question",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          name: candidate.name,
-          role: candidate.role,
-          experience: candidate.experience,
-          skills: candidate.skills,
-          previousAnswers: [],
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error || "Failed to generate question");
+    if (!candidate.name.trim()) {
+      alert("Please enter your name.");
+      return;
     }
 
-    setQuestion(data.question);
+    if (!candidate.role.trim()) {
+      alert("Please enter the job role.");
+      return;
+    }
 
-    setCurrentQuestion(0);
-    setAnswers([]);
-    setAnswer("");
+    if (!candidate.skills.trim()) {
+      alert("Please enter your skills.");
+      return;
+    }
 
-    setPage("interview");
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/interview/question",
+        {
+          method: "POST",
 
-  } catch (error) {
-    console.error("Interview start failed:", error);
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-    alert(
-      "Unable to generate the interview question. Please try again."
-    );
-  }
-};
+          body: JSON.stringify({
+            name: candidate.name,
+            role: candidate.role,
+            experience: candidate.experience,
+            skills: candidate.skills,
+            previousAnswers: [],
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to generate question");
+      }
+
+      setQuestion(data.question);
+
+      setCurrentQuestion(0);
+      setAnswers([]);
+      setAnswer("");
+
+      setPage("interview");
+
+    } catch (error) {
+      console.error("Interview start failed:", error);
+
+      alert(
+        "Unable to generate the interview question. Please try again."
+      );
+    }
+  };
 
   const submitAnswer = () => {
     if (!answer.trim()) {
@@ -147,9 +147,10 @@ function App() {
     }
 
     const newAnswer = {
-      question: questions[currentQuestion].question,
+      question: question,
       answer: answer,
     };
+    console.log("New Answer:", newAnswer);
 
     setAnswers((previous) => [...previous, newAnswer]);
 
@@ -458,7 +459,7 @@ function App() {
 
 
             <p className="question">
-               {question}
+              {question}
             </p>
 
 
