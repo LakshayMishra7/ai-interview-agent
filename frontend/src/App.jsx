@@ -68,34 +68,7 @@ function App() {
       [name]: value,
     }));
   };
-  // const testInterviewAPI = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       "http://localhost:5000/api/interview/question",
-  //       {
-  //         method: "POST",
-
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-
-  //         body: JSON.stringify({
-  //           name: candidate.name,
-  //           role: candidate.role,
-  //           experience: candidate.experience,
-  //           skills: candidate.skills,
-  //           previousAnswers: [],
-  //         }),
-  //       }
-  //     );
-
-  //     const data = await response.json();
-
-  //     console.log(data);
-  //   } catch (error) {
-  //     console.error("Interview API failed:", error);
-  //   }
-  // };
+  
 
   const startInterview = async (e) => {
     e.preventDefault();
@@ -117,7 +90,7 @@ function App() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/interview/question",
+        "https://ai-interview-agent-backend-5rjt.onrender.com/api/interview/question",
         {
           method: "POST",
 
@@ -160,7 +133,7 @@ function App() {
   const evaluateInterview = async (finalAnswers) => {
     try {
       const response = await fetch(
-        "http://localhost:5000/api/interview/evaluate",
+        "https://ai-interview-agent-backend-5rjt.onrender.com/api/interview/evaluate",
         {
           method: "POST",
 
@@ -229,7 +202,7 @@ function App() {
     // Otherwise generate the next question
     try {
       const response = await fetch(
-        "http://localhost:5000/api/interview/question",
+        "https://ai-interview-agent-backend-5rjt.onrender.com/api/interview/question",
         {
           method: "POST",
 
