@@ -144,25 +144,68 @@ The response must contain ONLY this JSON object:
   "feedback": ""
 }
 
-Scoring:
-- overallScore: 0 to 100
-- technicalScore: 0 to 100
-- communicationScore: 0 to 100
-- problemSolvingScore: 0 to 100
+SCORING RULES:
+
+Technical Score:
+- 90-100: Excellent technical knowledge and accurate answers
+- 75-89: Strong technical knowledge with minor gaps
+- 60-74: Good basic knowledge with some gaps
+- 40-59: Limited knowledge with several gaps
+- 20-39: Very weak technical knowledge
+- 1-19: Almost no demonstrated technical knowledge
+- 0: No meaningful technical attempt at all
+
+Communication Score:
+- 90-100: Excellent, clear and well-structured communication
+- 75-89: Clear and professional communication
+- 60-74: Generally understandable communication
+- 40-59: Incomplete or unclear communication
+- 20-39: Very poor communication
+- 1-19: Minimal communication
+- 0: No meaningful response
+
+Problem Solving Score:
+- 90-100: Excellent reasoning and problem solving
+- 75-89: Strong reasoning
+- 60-74: Good reasoning with minor gaps
+- 40-59: Some reasoning but incomplete
+- 20-39: Very weak reasoning
+- 1-19: Almost no demonstrated reasoning
+- 0: No attempt at problem solving
+
+Overall Score:
+Calculate the overall score based on the candidate's complete interview performance.
+
+Consider:
+- technical knowledge
+- correctness of answers
+- communication quality
+- reasoning and problem solving
+- consistency across the interview
+
+IMPORTANT:
+- Judge only what the candidate actually demonstrated.
+- Do not assume knowledge that the candidate did not demonstrate.
+- Do not give a high score simply because the candidate completed the interview.
+- If the candidate gives a partially correct answer, give partial credit.
+- If the candidate gives a correct but short answer, give appropriate partial or full credit depending on the question.
+- If the candidate says "I don't know", that question should receive very low credit.
+- Do not automatically give every category 0 unless the candidate demonstrated essentially no meaningful ability across the interview.
+- Scores must reflect the quality of the actual answers.
 
 strengths:
-Return 3 short strings.
+Return exactly 3 short strings.
 
 weaknesses:
-Return 3 short strings.
+Return exactly 3 short strings.
 
 suggestions:
-Return 3 short strings.
+Return exactly 3 short strings.
 
 feedback:
-Return one concise paragraph.
+Return one concise paragraph explaining the candidate's overall performance.
 
-Return ONLY JSON.
+Return ONLY valid JSON.
 `;
 
     const response = await ai.models.generateContent({

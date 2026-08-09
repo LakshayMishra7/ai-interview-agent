@@ -452,3 +452,112 @@
   }
 
 }
+/* =========================
+   RESULT DASHBOARD
+========================= */
+
+.score-section {
+  margin-top: 30px;
+  text-align: center;
+}
+
+
+/* Overall score */
+
+.overall-score {
+  border: 1px solid #2b2b38;
+  border-radius: 14px;
+  padding: 25px;
+  margin-bottom: 20px;
+  background: #08080d;
+}
+
+.overall-score span {
+  display: block;
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.overall-score strong {
+  font-size: 52px;
+  color: #8b5cf6;
+}
+
+.overall-score small {
+  font-size: 18px;
+  color: #777;
+  margin-left: 4px;
+}
+
+
+/* Individual scores */
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.score-grid > div {
+  border: 1px solid #2b2b38;
+  border-radius: 12px;
+  padding: 20px;
+  background: #08080d;
+}
+
+.score-grid span {
+  display: block;
+  color: #aaa;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.score-grid strong {
+  font-size: 28px;
+  color: #8b5cf6;
+}
+
+
+/* Feedback sections */
+
+.feedback-section {
+  margin-top: 25px;
+  padding: 20px;
+  border: 1px solid #2b2b38;
+  border-radius: 12px;
+  background: #08080d;
+  text-align: left;
+}
+
+.feedback-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.feedback-section ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.feedback-section li {
+  margin-bottom: 10px;
+  color: #ccc;
+  line-height: 1.5;
+}
+
+.feedback-section p {
+  color: #ccc;
+  line-height: 1.7;
+}
+
+
+/* Mobile */
+
+@media (max-width: 700px) {
+
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+}

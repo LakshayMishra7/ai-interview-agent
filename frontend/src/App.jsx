@@ -586,97 +586,262 @@ function App() {
 
       {/* RESULT */}
 
-      {page === "result" && (
+     {page === "result" && (
 
-        <main className="result-page">
+  <main className="result-page">
 
-          <div className="result-card">
+    <div className="result-card">
 
-            <div className="badge">
-              INTERVIEW COMPLETED
+      <div className="badge">
+        INTERVIEW COMPLETED
+      </div>
+
+      <h1>
+        Great job, {candidate.name}! 🎉
+      </h1>
+
+      <p>
+        You have completed your interview.
+      </p>
+
+
+      {/* SCORE SECTION */}
+
+      {evaluation && (
+
+        <>
+
+          <div className="score-section">
+
+            <div className="overall-score">
+
+              <span>
+                Overall Score
+              </span>
+
+              <strong>
+                {evaluation.overallScore}
+              </strong>
+
+              <small>
+                / 100
+              </small>
+
             </div>
 
-            <h1>
-              Great job, {candidate.name}! 🎉
-            </h1>
 
-            <p>
-              You have completed your interview.
-            </p>
-
-
-            <div className="result-summary">
+            <div className="score-grid">
 
               <div>
                 <span>
-                  Questions
+                  Technical
                 </span>
 
                 <strong>
-                  {MAX_QUESTIONS}
+                  {evaluation.technicalScore}
                 </strong>
               </div>
 
 
               <div>
                 <span>
-                  Answered
+                  Communication
                 </span>
 
                 <strong>
-                  {answers.length}
+                  {evaluation.communicationScore}
+                </strong>
+              </div>
+
+
+              <div>
+                <span>
+                  Problem Solving
+                </span>
+
+                <strong>
+                  {evaluation.problemSolvingScore}
                 </strong>
               </div>
 
             </div>
-
-
-            <h3>
-              Your Answers
-            </h3>
-
-
-            <div className="answer-list">
-
-              {answers.map((item, index) => (
-
-                <div
-                  className="answer-item"
-                  key={index}
-                >
-
-                  <h4>
-                    Question {index + 1}
-                  </h4>
-
-                  <p className="result-question">
-                    {item.question}
-                  </p>
-
-                  <p className="user-answer">
-                    {item.answer}
-                  </p>
-
-                </div>
-
-              ))}
-
-            </div>
-
-
-            <button
-              className="start-btn"
-              onClick={() => setPage("home")}
-            >
-              Back to Home
-            </button>
 
           </div>
 
-        </main>
+
+          {/* STRENGTHS */}
+
+          <div className="feedback-section">
+
+            <h3>
+              💪 Strengths
+            </h3>
+
+            <ul>
+
+              {evaluation.strengths.map(
+                (item, index) => (
+
+                  <li key={index}>
+                    {item}
+                  </li>
+
+                )
+              )}
+
+            </ul>
+
+          </div>
+
+
+          {/* WEAKNESSES */}
+
+          <div className="feedback-section">
+
+            <h3>
+              ⚠️ Areas to Improve
+            </h3>
+
+            <ul>
+
+              {evaluation.weaknesses.map(
+                (item, index) => (
+
+                  <li key={index}>
+                    {item}
+                  </li>
+
+                )
+              )}
+
+            </ul>
+
+          </div>
+
+
+          {/* SUGGESTIONS */}
+
+          <div className="feedback-section">
+
+            <h3>
+              💡 Suggestions
+            </h3>
+
+            <ul>
+
+              {evaluation.suggestions.map(
+                (item, index) => (
+
+                  <li key={index}>
+                    {item}
+                  </li>
+
+                )
+              )}
+
+            </ul>
+
+          </div>
+
+
+          {/* AI FEEDBACK */}
+
+          <div className="feedback-section">
+
+            <h3>
+              📝 AI Feedback
+            </h3>
+
+            <p>
+              {evaluation.feedback}
+            </p>
+
+          </div>
+
+        </>
 
       )}
 
+
+      {/* INTERVIEW SUMMARY */}
+
+      <div className="result-summary">
+
+        <div>
+
+          <span>
+            Questions
+          </span>
+
+          <strong>
+            {MAX_QUESTIONS}
+          </strong>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            Answered
+          </span>
+
+          <strong>
+            {answers.length}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      {/* ANSWERS */}
+
+      <h3>
+        Your Answers
+      </h3>
+
+
+      <div className="answer-list">
+
+        {answers.map((item, index) => (
+
+          <div
+            className="answer-item"
+            key={index}
+          >
+
+            <h4>
+              Question {index + 1}
+            </h4>
+
+            <p className="result-question">
+              {item.question}
+            </p>
+
+            <p className="user-answer">
+              {item.answer}
+            </p>
+
+          </div>
+
+        ))}
+
+      </div>
+
+
+      <button
+        className="start-btn"
+        onClick={() => setPage("home")}
+      >
+        Back to Home
+      </button>
+
+    </div>
+
+  </main>
+
+)}
     </div>
   );
 }
