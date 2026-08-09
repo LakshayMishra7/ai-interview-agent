@@ -41,6 +41,7 @@ function App() {
 
   const [answers, setAnswers] = useState([]);
   const [question, setQuestion] = useState("");
+  const [evaluation, setEvaluation] = useState(null);
 
   const MAX_QUESTIONS = 10;
 
@@ -141,66 +142,116 @@ function App() {
       );
     }
   };
+  const evaluateInterview = async (finalAnswers) => {
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/interview/evaluate",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          name: candidate.name,
+          role: candidate.role,
+          experience: candidate.experience,
+          skills: candidate.skills,
+          answers: finalAnswers,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Failed to evaluate interview"
+      );
+    }
+
+    console.log("AI Evaluation:", data);
+
+    setEvaluation(data);
+
+  } catch (error) {
+    console.error("Evaluation failed:", error);
+
+    alert("Failed to evaluate interview. Please try again.");
+  }
+};
 
   const submitAnswer = async () => {
-    if (!answer.trim()) {
-      alert("Please enter your answer.");
-      return;
-    }
+  if (!answer.trim()) {
+    alert("Please enter your answer.");
+    return;
+  }
 
-    const newAnswer = {
-      question: question,
-      answer: answer,
-    };
-
-    const updatedAnswers = [...answers, newAnswer];
-
-    setAnswers(updatedAnswers);
-    setAnswer("");
-
-    try {
-      const response = await fetch(
-        "http://localhost:5000/api/interview/question",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type": "application/json",
-          },
-
-          body: JSON.stringify({
-            name: candidate.name,
-            role: candidate.role,
-            experience: candidate.experience,
-            skills: candidate.skills,
-            previousAnswers: updatedAnswers,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data.error || "Failed to generate next question"
-        );
-      }
-
-      console.log("Next AI question:", data.question);
-
-      if (currentQuestion + 1 >= MAX_QUESTIONS) {
-        setPage("result");
-      } else {
-        setQuestion(data.question);
-        setCurrentQuestion((previous) => previous + 1);
-      }
-
-    } catch (error) {
-      console.error("Failed to get next question:", error);
-
-      alert("Unable to generate the next question. Please try again.");
-    }
+  const newAnswer = {
+    question: question,
+    answer: answer,
   };
+
+  const updatedAnswers = [...answers, newAnswer];
+
+  setAnswers(updatedAnswers);
+  setAnswer("");
+
+  // If this was the final question,
+  // evaluate the interview instead of generating another question.
+  if (currentQuestion + 1 >= MAX_QUESTIONS) {
+    console.log("Final question submitted.");
+    console.log("Total answers:", updatedAnswers.length);
+
+    await evaluateInterview(updatedAnswers);
+
+    setPage("result");
+
+    return;
+  }
+
+  // Otherwise generate the next question
+  try {
+    const response = await fetch(
+      "http://localhost:5000/api/interview/question",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          name: candidate.name,
+          role: candidate.role,
+          experience: candidate.experience,
+          skills: candidate.skills,
+          previousAnswers: updatedAnswers,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || "Failed to generate next question"
+      );
+    }
+
+    console.log("Next AI question:", data.question);
+
+    setQuestion(data.question);
+
+    setCurrentQuestion((previous) => previous + 1);
+
+  } catch (error) {
+    console.error("Failed to get next question:", error);
+
+    alert("Unable to generate the next question. Please try again.");
+  }
+};
   return (
     <div className="app">
 
