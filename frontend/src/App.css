@@ -561,3 +561,41 @@
   }
 
 }
+/* =========================
+   SCORE VISUALIZATION
+========================= */
+
+.performance-level {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #8b5cf6;
+}
+
+
+.individual-score {
+  text-align: left;
+}
+
+
+.individual-score strong {
+  display: block;
+  margin-bottom: 12px;
+}
+
+
+.score-bar {
+  width: 100%;
+  height: 8px;
+  background: #1b1b24;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+
+.score-bar-fill {
+  height: 100%;
+  background: #8b5cf6;
+  border-radius: 20px;
+  transition: width 0.6s ease;
+}

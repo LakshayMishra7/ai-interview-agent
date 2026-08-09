@@ -42,6 +42,21 @@ function App() {
   const [answers, setAnswers] = useState([]);
   const [question, setQuestion] = useState("");
   const [evaluation, setEvaluation] = useState(null);
+  const getPerformanceLevel = (score) => {
+    if (score >= 85) {
+      return "Excellent";
+    }
+
+    if (score >= 70) {
+      return "Good";
+    }
+
+    if (score >= 50) {
+      return "Needs Improvement";
+    }
+
+    return "Beginner";
+  };
 
   const MAX_QUESTIONS = 10;
 
@@ -143,115 +158,115 @@ function App() {
     }
   };
   const evaluateInterview = async (finalAnswers) => {
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/interview/evaluate",
-      {
-        method: "POST",
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/interview/evaluate",
+        {
+          method: "POST",
 
-        headers: {
-          "Content-Type": "application/json",
-        },
+          headers: {
+            "Content-Type": "application/json",
+          },
 
-        body: JSON.stringify({
-          name: candidate.name,
-          role: candidate.role,
-          experience: candidate.experience,
-          skills: candidate.skills,
-          answers: finalAnswers,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Failed to evaluate interview"
+          body: JSON.stringify({
+            name: candidate.name,
+            role: candidate.role,
+            experience: candidate.experience,
+            skills: candidate.skills,
+            answers: finalAnswers,
+          }),
+        }
       );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Failed to evaluate interview"
+        );
+      }
+
+      console.log("AI Evaluation:", data);
+
+      setEvaluation(data);
+
+    } catch (error) {
+      console.error("Evaluation failed:", error);
+
+      alert("Failed to evaluate interview. Please try again.");
     }
-
-    console.log("AI Evaluation:", data);
-
-    setEvaluation(data);
-
-  } catch (error) {
-    console.error("Evaluation failed:", error);
-
-    alert("Failed to evaluate interview. Please try again.");
-  }
-};
-
-  const submitAnswer = async () => {
-  if (!answer.trim()) {
-    alert("Please enter your answer.");
-    return;
-  }
-
-  const newAnswer = {
-    question: question,
-    answer: answer,
   };
 
-  const updatedAnswers = [...answers, newAnswer];
-
-  setAnswers(updatedAnswers);
-  setAnswer("");
-
-  // If this was the final question,
-  // evaluate the interview instead of generating another question.
-  if (currentQuestion + 1 >= MAX_QUESTIONS) {
-    console.log("Final question submitted.");
-    console.log("Total answers:", updatedAnswers.length);
-
-    await evaluateInterview(updatedAnswers);
-
-    setPage("result");
-
-    return;
-  }
-
-  // Otherwise generate the next question
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/interview/question",
-      {
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
-        body: JSON.stringify({
-          name: candidate.name,
-          role: candidate.role,
-          experience: candidate.experience,
-          skills: candidate.skills,
-          previousAnswers: updatedAnswers,
-        }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error || "Failed to generate next question"
-      );
+  const submitAnswer = async () => {
+    if (!answer.trim()) {
+      alert("Please enter your answer.");
+      return;
     }
 
-    console.log("Next AI question:", data.question);
+    const newAnswer = {
+      question: question,
+      answer: answer,
+    };
 
-    setQuestion(data.question);
+    const updatedAnswers = [...answers, newAnswer];
 
-    setCurrentQuestion((previous) => previous + 1);
+    setAnswers(updatedAnswers);
+    setAnswer("");
 
-  } catch (error) {
-    console.error("Failed to get next question:", error);
+    // If this was the final question,
+    // evaluate the interview instead of generating another question.
+    if (currentQuestion + 1 >= MAX_QUESTIONS) {
+      console.log("Final question submitted.");
+      console.log("Total answers:", updatedAnswers.length);
 
-    alert("Unable to generate the next question. Please try again.");
-  }
-};
+      await evaluateInterview(updatedAnswers);
+
+      setPage("result");
+
+      return;
+    }
+
+    // Otherwise generate the next question
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/interview/question",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            name: candidate.name,
+            role: candidate.role,
+            experience: candidate.experience,
+            skills: candidate.skills,
+            previousAnswers: updatedAnswers,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Failed to generate next question"
+        );
+      }
+
+      console.log("Next AI question:", data.question);
+
+      setQuestion(data.question);
+
+      setCurrentQuestion((previous) => previous + 1);
+
+    } catch (error) {
+      console.error("Failed to get next question:", error);
+
+      alert("Unable to generate the next question. Please try again.");
+    }
+  };
   return (
     <div className="app">
 
@@ -586,262 +601,298 @@ function App() {
 
       {/* RESULT */}
 
-     {page === "result" && (
+      {page === "result" && (
 
-  <main className="result-page">
+        <main className="result-page">
 
-    <div className="result-card">
+          <div className="result-card">
 
-      <div className="badge">
-        INTERVIEW COMPLETED
-      </div>
-
-      <h1>
-        Great job, {candidate.name}! 🎉
-      </h1>
-
-      <p>
-        You have completed your interview.
-      </p>
-
-
-      {/* SCORE SECTION */}
-
-      {evaluation && (
-
-        <>
-
-          <div className="score-section">
-
-            <div className="overall-score">
-
-              <span>
-                Overall Score
-              </span>
-
-              <strong>
-                {evaluation.overallScore}
-              </strong>
-
-              <small>
-                / 100
-              </small>
-
+            <div className="badge">
+              INTERVIEW COMPLETED
             </div>
 
-
-            <div className="score-grid">
-
-              <div>
-                <span>
-                  Technical
-                </span>
-
-                <strong>
-                  {evaluation.technicalScore}
-                </strong>
-              </div>
-
-
-              <div>
-                <span>
-                  Communication
-                </span>
-
-                <strong>
-                  {evaluation.communicationScore}
-                </strong>
-              </div>
-
-
-              <div>
-                <span>
-                  Problem Solving
-                </span>
-
-                <strong>
-                  {evaluation.problemSolvingScore}
-                </strong>
-              </div>
-
-            </div>
-
-          </div>
-
-
-          {/* STRENGTHS */}
-
-          <div className="feedback-section">
-
-            <h3>
-              💪 Strengths
-            </h3>
-
-            <ul>
-
-              {evaluation.strengths.map(
-                (item, index) => (
-
-                  <li key={index}>
-                    {item}
-                  </li>
-
-                )
-              )}
-
-            </ul>
-
-          </div>
-
-
-          {/* WEAKNESSES */}
-
-          <div className="feedback-section">
-
-            <h3>
-              ⚠️ Areas to Improve
-            </h3>
-
-            <ul>
-
-              {evaluation.weaknesses.map(
-                (item, index) => (
-
-                  <li key={index}>
-                    {item}
-                  </li>
-
-                )
-              )}
-
-            </ul>
-
-          </div>
-
-
-          {/* SUGGESTIONS */}
-
-          <div className="feedback-section">
-
-            <h3>
-              💡 Suggestions
-            </h3>
-
-            <ul>
-
-              {evaluation.suggestions.map(
-                (item, index) => (
-
-                  <li key={index}>
-                    {item}
-                  </li>
-
-                )
-              )}
-
-            </ul>
-
-          </div>
-
-
-          {/* AI FEEDBACK */}
-
-          <div className="feedback-section">
-
-            <h3>
-              📝 AI Feedback
-            </h3>
+            <h1>
+              Great job, {candidate.name}! 🎉
+            </h1>
 
             <p>
-              {evaluation.feedback}
+              You have completed your interview.
             </p>
+
+
+            {/* SCORE SECTION */}
+
+            {evaluation && (
+
+              <>
+
+                <div className="score-section">
+
+                  <div className="overall-score">
+
+                    <span>
+                      Overall Score
+                    </span>
+
+                    <strong>
+                      {evaluation.overallScore}
+                    </strong>
+
+                    <small>
+                      / 100
+                    </small>
+
+                    <div className="performance-level">
+                      {getPerformanceLevel(evaluation.overallScore)}
+                    </div>
+
+                  </div>
+
+
+                  <div className="score-grid">
+
+                    <div className="individual-score">
+
+                      <span>
+                        Technical
+                      </span>
+
+                      <strong>
+                        {evaluation.technicalScore}
+                      </strong>
+
+                      <div className="score-bar">
+                        <div
+                          className="score-bar-fill"
+                          style={{
+                            width: `${evaluation.technicalScore}%`,
+                          }}
+                        ></div>
+                      </div>
+
+                    </div>
+
+
+                    <div className="individual-score">
+
+                      <span>
+                        Communication
+                      </span>
+
+                      <strong>
+                        {evaluation.communicationScore}
+                      </strong>
+
+                      <div className="score-bar">
+                        <div
+                          className="score-bar-fill"
+                          style={{
+                            width: `${evaluation.communicationScore}%`,
+                          }}
+                        ></div>
+                      </div>
+
+                    </div>
+
+
+                    <div className="individual-score">
+
+                      <span>
+                        Problem Solving
+                      </span>
+
+                      <strong>
+                        {evaluation.problemSolvingScore}
+                      </strong>
+
+                      <div className="score-bar">
+                        <div
+                          className="score-bar-fill"
+                          style={{
+                            width: `${evaluation.problemSolvingScore}%`,
+                          }}
+                        ></div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+                {/* STRENGTHS */}
+
+                <div className="feedback-section">
+
+                  <h3>
+                    💪 Strengths
+                  </h3>
+
+                  <ul>
+
+                    {evaluation.strengths.map(
+                      (item, index) => (
+
+                        <li key={index}>
+                          {item}
+                        </li>
+
+                      )
+                    )}
+
+                  </ul>
+
+                </div>
+
+
+                {/* WEAKNESSES */}
+
+                <div className="feedback-section">
+
+                  <h3>
+                    ⚠️ Areas to Improve
+                  </h3>
+
+                  <ul>
+
+                    {evaluation.weaknesses.map(
+                      (item, index) => (
+
+                        <li key={index}>
+                          {item}
+                        </li>
+
+                      )
+                    )}
+
+                  </ul>
+
+                </div>
+
+
+                {/* SUGGESTIONS */}
+
+                <div className="feedback-section">
+
+                  <h3>
+                    💡 Suggestions
+                  </h3>
+
+                  <ul>
+
+                    {evaluation.suggestions.map(
+                      (item, index) => (
+
+                        <li key={index}>
+                          {item}
+                        </li>
+
+                      )
+                    )}
+
+                  </ul>
+
+                </div>
+
+
+                {/* AI FEEDBACK */}
+
+                <div className="feedback-section">
+
+                  <h3>
+                    📝 AI Feedback
+                  </h3>
+
+                  <p>
+                    {evaluation.feedback}
+                  </p>
+
+                </div>
+
+              </>
+
+            )}
+
+
+            {/* INTERVIEW SUMMARY */}
+
+            <div className="result-summary">
+
+              <div>
+
+                <span>
+                  Questions
+                </span>
+
+                <strong>
+                  {MAX_QUESTIONS}
+                </strong>
+
+              </div>
+
+
+              <div>
+
+                <span>
+                  Answered
+                </span>
+
+                <strong>
+                  {answers.length}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            {/* ANSWERS */}
+
+            <h3>
+              Your Answers
+            </h3>
+
+
+            <div className="answer-list">
+
+              {answers.map((item, index) => (
+
+                <div
+                  className="answer-item"
+                  key={index}
+                >
+
+                  <h4>
+                    Question {index + 1}
+                  </h4>
+
+                  <p className="result-question">
+                    {item.question}
+                  </p>
+
+                  <p className="user-answer">
+                    {item.answer}
+                  </p>
+
+                </div>
+
+              ))}
+
+            </div>
+
+
+            <button
+              className="start-btn"
+              onClick={() => setPage("home")}
+            >
+              Back to Home
+            </button>
 
           </div>
 
-        </>
+        </main>
 
       )}
-
-
-      {/* INTERVIEW SUMMARY */}
-
-      <div className="result-summary">
-
-        <div>
-
-          <span>
-            Questions
-          </span>
-
-          <strong>
-            {MAX_QUESTIONS}
-          </strong>
-
-        </div>
-
-
-        <div>
-
-          <span>
-            Answered
-          </span>
-
-          <strong>
-            {answers.length}
-          </strong>
-
-        </div>
-
-      </div>
-
-
-      {/* ANSWERS */}
-
-      <h3>
-        Your Answers
-      </h3>
-
-
-      <div className="answer-list">
-
-        {answers.map((item, index) => (
-
-          <div
-            className="answer-item"
-            key={index}
-          >
-
-            <h4>
-              Question {index + 1}
-            </h4>
-
-            <p className="result-question">
-              {item.question}
-            </p>
-
-            <p className="user-answer">
-              {item.answer}
-            </p>
-
-          </div>
-
-        ))}
-
-      </div>
-
-
-      <button
-        className="start-btn"
-        onClick={() => setPage("home")}
-      >
-        Back to Home
-      </button>
-
-    </div>
-
-  </main>
-
-)}
     </div>
   );
 }
